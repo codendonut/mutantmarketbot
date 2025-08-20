@@ -34,9 +34,9 @@ def report(
             "trigger",
             "atr",
             "wma",
-            "bid_high",
             kernel_conf.signal_buy_column,
             kernel_conf.signal_exit_column,
+            "bid_high",
             kernel_conf.ask_column,
             kernel_conf.bid_column,
             "position_value",
@@ -60,12 +60,12 @@ def report(
         "\n"
         + df_orders.tail(length * 2)
         .round(round_amount)
-        .to_string(index=False, header=True, justify="left")
+        .to_string(index=True, header=True, justify="left")
     )
     logger.info("current status")
     logger.info(
         "\n"
         + df_ticks.tail(length)
         .round(round_amount)
-        .to_string(index=False, header=True, justify="left")
+        .to_string(index=True, header=True, justify="left")
     )

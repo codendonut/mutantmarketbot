@@ -210,6 +210,20 @@ def kernel_stage_1(
         trigger,
     )
 
+    if erase:
+        for i in range(3, len(signal)):
+            if signal[i - 2] == 0 and signal[i - 1] == 1 and signal[i - 0] == 0:
+                signal[i - 1] = 0
+        trigger = np.diff(signal)
+        trigger = np.concatenate((np.zeros(1), trigger)).astype(np.int64)
+        position_value, entry_atr = entry_price(
+            ask_data,
+            bid_data,
+            atr,
+            signal,
+            trigger,
+        )
+
     # for internally managed take profits
     if take_profit_conf > 0:
         signal, trigger, take_profit_array = take_profit(
@@ -244,20 +258,6 @@ def kernel_stage_1(
             trigger,
         )
         position_value = np.where(position_value < stop_loss_array, stop_loss_array, position_value)
-
-    if erase:
-        for i in range(3, len(signal)):
-            if signal[i - 2] == 0 and signal[i - 1] == 1 and signal[i - 0] == 0:
-                signal[i - 1] = 0
-        trigger = np.diff(signal)
-        trigger = np.concatenate((np.zeros(1), trigger)).astype(np.int64)
-        position_value, entry_atr = entry_price(
-            ask_data,
-            bid_data,
-            atr,
-            signal,
-            trigger,
-        )
 
     exit_value = np.where(trigger == -1, position_value, 0)
     et = np.cumsum(exit_value)
