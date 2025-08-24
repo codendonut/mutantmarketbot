@@ -224,6 +224,22 @@ def kernel_stage_1(
             trigger,
         )
 
+    if stop_loss_conf > 0:
+        signal, trigger, stop_loss_array = sl(
+            position_value,
+            entry_atr,
+            signal,
+            stop_loss_conf,
+            trigger,
+        )
+        position_value, entry_atr = entry_price(
+            ask_data,
+            bid_data,
+            atr,
+            signal,
+            trigger,
+        )
+
     # for internally managed take profits
     if take_profit_conf > 0:
         signal, trigger, take_profit_array = take_profit(
@@ -240,24 +256,6 @@ def kernel_stage_1(
             signal,
             trigger,
         )
-        position_value = np.where(position_value > take_profit_array, take_profit_array, position_value)
-
-    if stop_loss_conf > 0:
-        signal, trigger, stop_loss_array = sl(
-            position_value,
-            entry_atr,
-            signal,
-            stop_loss_conf,
-            trigger,
-        )
-        position_value, entry_atr = entry_price(
-            ask_data,
-            bid_data,
-            atr,
-            signal,
-            trigger,
-        )
-        position_value = np.where(position_value < stop_loss_array, stop_loss_array, position_value)
 
     exit_value = np.where(trigger == -1, position_value, 0)
     et = np.cumsum(exit_value)
